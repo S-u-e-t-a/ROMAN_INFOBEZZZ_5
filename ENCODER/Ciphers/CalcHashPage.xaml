@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:ciphers="clr-namespace:ENCODER.Ciphers"
+                  x:DataType="ciphers:CalcHashViewModel"
+                  x:Class="ENCODER.Ciphers.CalcHashPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Editor Text="{Binding text}"/>
+            <Picker ItemsSource="{Binding AlgWithNames}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedAlg}"/>
+            <Button BackgroundColor="Fuchsia" Command="{Binding calcHash}" Text="Посчитать хэш"/>
+            <Entry Text="{Binding hash , Mode=TwoWay}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

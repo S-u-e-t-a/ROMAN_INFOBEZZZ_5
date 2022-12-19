@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace ENCODER.Ciphers;
 
-public partial class sha256 
+public partial class CalcHashPage 
 {
- public sha256()
+ public CalcHashPage()
  {
   InitializeComponent();
-  BindingContext = new sha256ViewModel();
+  BindingContext = new CalcHashViewModel();
  }
 }
 

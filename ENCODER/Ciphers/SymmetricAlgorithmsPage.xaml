@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ciphers="clr-namespace:ENCODER.Ciphers"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             x:DataType="ciphers:SymmetricAlgorithmsViewModel"
+             x:Class="ENCODER.Ciphers.SymmetricAlgorithmsPage">
+
+
+        <ContentPage.Content>
+        <VerticalStackLayout>
+                <HorizontalStackLayout>
+                        <Label Text="Текст" IsVisible="{Binding IsText}"/>
+                        <Label Text="Файл" IsVisible="{Binding IsFile}"/>
+                        <CheckBox IsChecked="{Binding IsText}"/>
+                </HorizontalStackLayout>
+                
+                <Editor Text="{Binding Text}" Placeholder="Текст"
+                        IsVisible="{Binding IsText}"/>
+                <Editor Text="{Binding Path}" Placeholder="Файл"
+                        IsVisible="{Binding IsFile}"/>
+                
+                <HorizontalStackLayout>
+                        <Label Text="Создать ключ по паролю" IsVisible="{Binding IsPassword}"/>
+                        <Label Text="Ввести ключ" IsVisible="{Binding IsKey}"/>
+                        <CheckBox IsChecked="{Binding IsPassword}"/>
+                </HorizontalStackLayout>
+                
+                <VerticalStackLayout IsVisible="{Binding IsPassword}">
+                        <Editor Text="{Binding Password}"
+                                Placeholder="Пароль"/>
+                        <Editor Text="{Binding Salt}"
+                                Placeholder="Соль"/>
+                        <Entry Keyboard="Numeric"
+                               Placeholder="Количество итераций"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout>
+                        <Editor Text="{Binding Key}"
+                                IsReadOnly="{Binding IsPassword}"
+                                Placeholder="Сгенерированный ключ в формате Base64"/>
+                        <Editor Text="{Binding IV}"
+                                IsReadOnly="{Binding IsPassword}"
+                                Placeholder="Сгенерированный IV в формате Base64"/>
+                </VerticalStackLayout>
+                
+            <!-- <Editor Text="{Binding Key}" Placeholder="Пароль"/> -->
+            <!-- <Editor Placeholder="Сгенерированный ключ в формате Base64"/> -->
+            <!-- <Editor Placeholder="Сгенерированный IV в формате Base64"/> -->
+            <Picker ItemsSource="{Binding AllCipherModes}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedCipherMode}"/>
+            <Picker ItemsSource="{Binding AllPaddingModes}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedPaddingMode}"/>
+            <Picker ItemsSource="{Binding AlgWithNames}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedAlg}"/>
+            <Picker ItemsSource="{Binding SelectedAlg.keySizes}"
+                    SelectedItem="{Binding SelectedAlg.Algorithm.KeySize}"/>
+            <Picker ItemsSource="{Binding SelectedAlg.blockSizes}"
+                    SelectedItem="{Binding SelectedAlg.Algorithm.BlockSize}"/>
+            <HorizontalStackLayout>
+                <Button BackgroundColor="Fuchsia"
+                        Command="{Binding Encode }"
+                        Text="Кодировать"/>
+                <Button BackgroundColor="Fuchsia"
+                        Command="{Binding Decode }"
+                        Text="Декодировать"/>
+            </HorizontalStackLayout>
+            <Entry Text="{Binding Result , Mode=TwoWay}"/>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>
