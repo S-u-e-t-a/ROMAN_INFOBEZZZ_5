@@ -33,7 +33,8 @@
                         <Editor Text="{Binding Salt}"
                                 Placeholder="Соль"/>
                         <Entry Keyboard="Numeric"
-                               Placeholder="Количество итераций"/>
+                               Placeholder="Количество итераций"
+                               Text="{Binding Iterations}"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout>
                         <Editor Text="{Binding Key}"
@@ -57,9 +58,9 @@
                     ItemDisplayBinding="{Binding Name}"
                     SelectedItem="{Binding SelectedAlg}"/>
             <Picker ItemsSource="{Binding SelectedAlg.keySizes}"
-                    SelectedItem="{Binding SelectedAlg.Algorithm.KeySize}"/>
+                    SelectedItem="{Binding KeySize1}"/>
             <Picker ItemsSource="{Binding SelectedAlg.blockSizes}"
-                    SelectedItem="{Binding SelectedAlg.Algorithm.BlockSize}"/>
+                    SelectedItem="{Binding BlockSize1}"/>
             <HorizontalStackLayout>
                 <Button BackgroundColor="Fuchsia"
                         Command="{Binding Encode }"

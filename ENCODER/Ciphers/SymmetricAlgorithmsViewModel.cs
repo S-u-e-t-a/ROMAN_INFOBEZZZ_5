@@ -2,10 +2,11 @@
 using System.Security.Cryptography;
 using System.Text;
 
+using PropertyChanged;
 
 namespace ENCODER.Ciphers;
 
-public class SymmetricAlgWithName
+public class SymmetricAlgWithName : BaseViewModel
 {
     public string Name { get; set; }
     public SymmetricAlgorithm Algorithm { get; set; }
@@ -133,20 +134,91 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         SelectedCipherMode = AllCipherModes[0];
     }
     public List<SymmetricAlgWithName> AlgWithNames { get; set; }
-    public SymmetricAlgWithName SelectedAlg { get; set; }
+
+    private SymmetricAlgWithName _selectedAlg;
+
+    public SymmetricAlgWithName SelectedAlg
+    {
+        get
+        {
+            return _selectedAlg;
+        }
+        set
+        {
+            _selectedAlg = value;
+            OnPropertyChanged(nameof(KeySize1));
+            OnPropertyChanged(nameof(BlockSize1));
+            
+        }
+    }
+
     public List<CipherModeExtended> AllCipherModes { get; set; }
     public List<PaddingModeExtended> AllPaddingModes { get; set; }
 
 
 #region input
 
-    public string Text { get; set; }
-    public string Path { get; set; }
+    public string Text { get; set; }= "";
+    public string Path { get; set; }= "";
     public string Result { get; set; }
-    public string Password { get; set; }
-    public string Salt { get; set; }
-    public int Iterations { get; set; }
-    public string Key { get; set; }
+    public string Password { get; set; } = "";
+    public string Salt { get; set; }= "";
+    public int Iterations { get; set; } = 50;
+    private string key;
+    private int _blockSize;
+
+    public int BlockSize1 //если убрать 1 в названии то перестает работать. 
+    {
+        get
+        {
+            return SelectedAlg.Algorithm.BlockSize;
+        }
+        set
+        {
+            SelectedAlg.Algorithm.BlockSize = value;
+            OnPropertyChanged(nameof(Key));
+        }
+    }
+
+    private int _keySize;
+
+    public int KeySize1 //если убрать 1 в названии то перестает работать. 
+    {
+        get
+        {
+            return SelectedAlg.Algorithm.KeySize;
+        }
+        set
+        {
+            SelectedAlg.Algorithm.KeySize = value;
+            OnPropertyChanged(nameof(Key));
+
+        }
+    }
+    
+[DependsOn("KeySize", "BlockSize")]
+    public string Key
+    {
+        get
+        {
+            if (IsPassword)
+            {
+                var bytes = Encoding.Unicode.GetBytes(Password);
+                var keyIV = EncDec.GenerateKeyAndIVByPassword(Password, 
+                                                              Encoding.Unicode.GetBytes(Salt), 
+                                                              SelectedAlg.Algorithm.KeySize, 
+                                                              SelectedAlg.Algorithm.BlockSize,
+                                                              Iterations);
+
+                key = Convert.ToBase64String(keyIV.Key);
+                IV = Convert.ToBase64String(keyIV.IV);
+            }
+
+            return key;
+        }
+        set => key = value;
+    }
+
     public string IV { get; set; }
 
     public bool IsText { get; set; }
@@ -176,10 +248,11 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
     {
         get
         {
-            return _encode ??= new Command(() =>
+            return _encode ??= new Command(async () =>
             {
                 try
                 {
+                    App.AlertSvc.ShowAlert("ОГО","АЛЕРТ!!!");
                     var alg = SelectedAlg.Algorithm;
                     alg.Mode = SelectedCipherMode.Mode;
                     alg.Padding = SelectedPaddingMode.Mode;
