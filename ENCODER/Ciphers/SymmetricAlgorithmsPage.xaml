@@ -4,72 +4,78 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ciphers="clr-namespace:ENCODER.Ciphers"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:controls="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
              x:DataType="ciphers:SymmetricAlgorithmsViewModel"
              x:Class="ENCODER.Ciphers.SymmetricAlgorithmsPage">
 
 
         <ContentPage.Content>
-        <VerticalStackLayout>
+        <ScrollView>
+            <VerticalStackLayout Padding="10" Spacing="20" >
                 <HorizontalStackLayout>
-                        <Label Text="Текст" IsVisible="{Binding IsText}"/>
-                        <Label Text="Файл" IsVisible="{Binding IsFile}"/>
-                        <CheckBox IsChecked="{Binding IsText}"/>
+                    <Label Text="Текст" IsVisible="{Binding IsText}"/>
+                    <Label Text="Файл" IsVisible="{Binding IsFile}"/>
+                    <CheckBox IsChecked="{Binding IsText}"/>
                 </HorizontalStackLayout>
-                
+
                 <Editor Text="{Binding Text}" Placeholder="Текст"
                         IsVisible="{Binding IsText}"/>
                 <Editor Text="{Binding Path}" Placeholder="Файл"
                         IsVisible="{Binding IsFile}"/>
-                
+
                 <HorizontalStackLayout>
-                        <Label Text="Создать ключ по паролю" IsVisible="{Binding IsPassword}"/>
-                        <Label Text="Ввести ключ" IsVisible="{Binding IsKey}"/>
-                        <CheckBox IsChecked="{Binding IsPassword}"/>
+                    <Label Text="Создать ключ по паролю" IsVisible="{Binding IsPassword}"/>
+                    <Label Text="Ввести ключ" IsVisible="{Binding IsKey}"/>
+                    <CheckBox IsChecked="{Binding IsPassword}"/>
                 </HorizontalStackLayout>
-                
-                <VerticalStackLayout IsVisible="{Binding IsPassword}">
-                        <Editor Text="{Binding Password}"
-                                Placeholder="Пароль"/>
-                        <Editor Text="{Binding Salt}"
-                                Placeholder="Соль"/>
-                        <Entry Keyboard="Numeric"
-                               Placeholder="Количество итераций"
-                               Text="{Binding Iterations}"/>
+
+                <VerticalStackLayout IsVisible="{Binding IsPassword}" Spacing="20">
+                    <controls:TextField Text="{Binding Password}"
+                                        Title="Пароль"
+                    />
+                    <controls:TextField Text="{Binding Salt}"
+                                        Title="Соль"
+                    />
+                    <controls:TextField Keyboard="Numeric"
+                                        Title="Количество итераций"
+                                        Text="{Binding Iterations}"
+                    />
                 </VerticalStackLayout>
-                <VerticalStackLayout>
-                        <Editor Text="{Binding Key}"
-                                IsReadOnly="{Binding IsPassword}"
-                                Placeholder="Сгенерированный ключ в формате Base64"/>
-                        <Editor Text="{Binding IV}"
-                                IsReadOnly="{Binding IsPassword}"
-                                Placeholder="Сгенерированный IV в формате Base64"/>
+                <VerticalStackLayout Spacing="20">
+                    <controls:TextField Text="{Binding Key}"
+                                        IsEnabled="{Binding IsKey}"
+                                        Title="Сгенерированный ключ в формате Base64"
+                    />
+                    <controls:TextField Text="{Binding IV}"
+                                        IsEnabled="{Binding IsKey}"
+                                        Title="Сгенерированный IV в формате Base64"
+                    />
                 </VerticalStackLayout>
                 
-            <!-- <Editor Text="{Binding Key}" Placeholder="Пароль"/> -->
-            <!-- <Editor Placeholder="Сгенерированный ключ в формате Base64"/> -->
-            <!-- <Editor Placeholder="Сгенерированный IV в формате Base64"/> -->
-            <Picker ItemsSource="{Binding AllCipherModes}"
+                <Picker ItemsSource="{Binding AllCipherModes}"
                     ItemDisplayBinding="{Binding Name}"
                     SelectedItem="{Binding SelectedCipherMode}"/>
-            <Picker ItemsSource="{Binding AllPaddingModes}"
+                <Picker ItemsSource="{Binding AllPaddingModes}"
                     ItemDisplayBinding="{Binding Name}"
                     SelectedItem="{Binding SelectedPaddingMode}"/>
-            <Picker ItemsSource="{Binding AlgWithNames}"
+                <Picker ItemsSource="{Binding AlgWithNames}"
                     ItemDisplayBinding="{Binding Name}"
                     SelectedItem="{Binding SelectedAlg}"/>
-            <Picker ItemsSource="{Binding SelectedAlg.keySizes}"
+                <Picker ItemsSource="{Binding SelectedAlg.keySizes}"
                     SelectedItem="{Binding KeySize1}"/>
-            <Picker ItemsSource="{Binding SelectedAlg.blockSizes}"
+                <Picker ItemsSource="{Binding SelectedAlg.blockSizes}"
                     SelectedItem="{Binding BlockSize1}"/>
-            <HorizontalStackLayout>
-                <Button BackgroundColor="Fuchsia"
+                <HorizontalStackLayout>
+                    <Button BackgroundColor="Fuchsia"
                         Command="{Binding Encode }"
                         Text="Кодировать"/>
-                <Button BackgroundColor="Fuchsia"
+                    <Button BackgroundColor="Fuchsia"
                         Command="{Binding Decode }"
                         Text="Декодировать"/>
-            </HorizontalStackLayout>
-            <Entry Text="{Binding Result , Mode=TwoWay}"/>
-        </VerticalStackLayout>
+                </HorizontalStackLayout>
+                <Entry Text="{Binding Result , Mode=TwoWay}" IsReadOnly="True"/>
+            </VerticalStackLayout>
+        </ScrollView>
+        
     </ContentPage.Content>
 </ContentPage>
