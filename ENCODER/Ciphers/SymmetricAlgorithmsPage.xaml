@@ -2,80 +2,122 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:u="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
              xmlns:ciphers="clr-namespace:ENCODER.Ciphers"
-             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              xmlns:controls="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:custom="using:ENCODER.Ciphers.custom"
              x:DataType="ciphers:SymmetricAlgorithmsViewModel"
              x:Class="ENCODER.Ciphers.SymmetricAlgorithmsPage">
 
 
-        <ContentPage.Content>
+    <ContentPage.Content>
         <ScrollView>
-            <VerticalStackLayout Padding="10" Spacing="20" >
+            <VerticalStackLayout  Padding="10" Spacing="20"
+                                  AbsoluteLayout.LayoutFlags="All"
+                                  AbsoluteLayout.LayoutBounds="0, 0, 1, 1">
                 <HorizontalStackLayout>
-                    <Label Text="Текст" IsVisible="{Binding IsText}"/>
-                    <Label Text="Файл" IsVisible="{Binding IsFile}"/>
-                    <CheckBox IsChecked="{Binding IsText}"/>
+                    <Label Text="Текст" IsVisible="{Binding IsText}" />
+                    <Label Text="Файл" IsVisible="{Binding IsFile}" />
+                    <CheckBox IsChecked="{Binding IsText}" />
                 </HorizontalStackLayout>
 
-                <Editor Text="{Binding Text}" Placeholder="Текст"
-                        IsVisible="{Binding IsText}"/>
-                <Editor Text="{Binding Path}" Placeholder="Файл"
-                        IsVisible="{Binding IsFile}"/>
+                <custom:CustomEditor Text="{Binding Text}" Title="Текст для шифрования"
+                                    IsVisible="{Binding IsText}"  >
+                   
+                </custom:CustomEditor>
+                <custom:CustomEditor Text="{Binding Path}"
+                                     IsVisible="{Binding IsFile}"
+                                     Title="Путь к файлу для шифрования" />
 
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        
+                    </Grid.RowDefinitions>
+                </Grid>
                 <HorizontalStackLayout>
-                    <Label Text="Создать ключ по паролю" IsVisible="{Binding IsPassword}"/>
-                    <Label Text="Ввести ключ" IsVisible="{Binding IsKey}"/>
-                    <CheckBox IsChecked="{Binding IsPassword}"/>
+                    <Label Text="Создать ключ по паролю" IsVisible="{Binding IsPassword}" />
+                    <Label Text="Ввести ключ" IsVisible="{Binding IsKey}" />
+                    <CheckBox IsChecked="{Binding IsPassword}" />
                 </HorizontalStackLayout>
 
-                <VerticalStackLayout IsVisible="{Binding IsPassword}" Spacing="20">
+                <HorizontalStackLayout IsVisible="{Binding IsPassword}" Spacing="20">
                     <controls:TextField Text="{Binding Password}"
-                                        Title="Пароль"
-                    />
+                                        Title="Пароль" />
                     <controls:TextField Text="{Binding Salt}"
-                                        Title="Соль"
-                    />
+                                        Title="Соль" />
                     <controls:TextField Keyboard="Numeric"
                                         Title="Количество итераций"
-                                        Text="{Binding Iterations}"
-                    />
-                </VerticalStackLayout>
-                <VerticalStackLayout Spacing="20">
+                                        Text="{Binding Iterations}" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="20">
                     <controls:TextField Text="{Binding Key}"
                                         IsEnabled="{Binding IsKey}"
-                                        Title="Сгенерированный ключ в формате Base64"
-                    />
+                                        Title="Сгенерированный ключ в формате Base64" />
+
                     <controls:TextField Text="{Binding IV}"
                                         IsEnabled="{Binding IsKey}"
-                                        Title="Сгенерированный IV в формате Base64"
-                    />
-                </VerticalStackLayout>
-                
-                <Picker ItemsSource="{Binding AllCipherModes}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedCipherMode}"/>
-                <Picker ItemsSource="{Binding AllPaddingModes}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedPaddingMode}"/>
-                <Picker ItemsSource="{Binding AlgWithNames}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedAlg}"/>
-                <Picker ItemsSource="{Binding SelectedAlg.keySizes}"
-                    SelectedItem="{Binding KeySize1}"/>
-                <Picker ItemsSource="{Binding SelectedAlg.blockSizes}"
-                    SelectedItem="{Binding BlockSize1}"/>
-                <HorizontalStackLayout>
-                    <Button BackgroundColor="Fuchsia"
-                        Command="{Binding Encode }"
-                        Text="Кодировать"/>
-                    <Button BackgroundColor="Fuchsia"
-                        Command="{Binding Decode }"
-                        Text="Декодировать"/>
+                                        Title="Сгенерированный IV в формате Base64" />
+
                 </HorizontalStackLayout>
-                <Entry Text="{Binding Result , Mode=TwoWay}" IsReadOnly="True"/>
+
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <controls:PickerField ColumnSpan="2" Margin="10" ItemsSource="{Binding AlgWithNames}"
+                                          SelectedItem="{Binding SelectedAlg}"
+                                          Title="Алгоритм шифрования"
+                                          AllowClear="False" />
+                    <controls:PickerField Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding AllCipherModes}"
+                                          SelectedItem="{Binding SelectedCipherMode}"
+                                          Title="Режим шифрования"
+                                          AllowClear="False" />
+                    <controls:PickerField Grid.Row="1" Grid.Column="1" Margin="10"
+                                          ItemsSource="{Binding AllPaddingModes}"
+                                          SelectedItem="{Binding SelectedPaddingMode}"
+                                          Title="Режим дополнения"
+                                          AllowClear="False" />
+                    <controls:PickerField Grid.Row="2" Grid.Column="0" Margin="10" ItemsSource="{Binding SelectedAlg.keySizes}"
+                                          SelectedItem="{Binding KeySize1}"
+                                          Title="Размер ключа"
+                                          AllowClear="False" />
+                    <controls:PickerField Grid.Row="2" Grid.Column="1" Margin="10" ItemsSource="{Binding SelectedAlg.blockSizes}"
+                                          SelectedItem="{Binding BlockSize1}"
+                                          Title="Размер блока"
+                                          AllowClear="False" />
+                </Grid>
+                
+                <HorizontalStackLayout Spacing="25">
+                    <Button
+                        Command="{Binding Encode }"
+                        Text="Кодировать" />
+                    <Button
+                        Command="{Binding Decode }"
+                        Text="Декодировать" />
+                </HorizontalStackLayout>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <custom:CustomEditor x:Name="ResultField" Title="Результат"
+                                           Text="{Binding Result, Mode=TwoWay}" IsEnabled="True" />
+                    <Button  Text="Скопировать в буфер" Grid.Column="1"  Clicked="Button_OnClicked"/>
+                </Grid>
+                <BoxView HeightRequest="200" Color="{StaticResource   OnBackground}"/>
             </VerticalStackLayout>
         </ScrollView>
-        
+
     </ContentPage.Content>
 </ContentPage>

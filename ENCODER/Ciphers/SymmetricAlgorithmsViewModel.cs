@@ -54,19 +54,32 @@ public class SymmetricAlgWithName : BaseViewModel
 
         return sizes;
     } }
-    
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
 
 
-public class CipherModeExtended
+public class CipherModeExtended: BaseViewModel
 {
     public CipherMode Mode { get; set; }
     public string Name { get; set; }
+    public override string ToString()
+    {
+        return Name;
+    }
 }
-public class PaddingModeExtended
+
+public class PaddingModeExtended: BaseViewModel
 {
     public PaddingMode Mode { get; set; }
     public string Name { get; set; }
+    public override string ToString()
+    {
+        return Name;
+    }
 }
 public class SymmetricAlgorithmsViewModel: BaseViewModel
 {
@@ -158,7 +171,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
 
 #region input
 
-    public string Text { get; set; }= "";
+    public string Text { get; set; }= "ТЕКСТ";
     public string Path { get; set; }= "";
     public string Result { get; set; }
     public string Password { get; set; } = "";

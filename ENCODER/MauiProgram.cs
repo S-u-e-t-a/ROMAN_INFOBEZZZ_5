@@ -20,9 +20,9 @@ public static class MauiProgram
                .UseUraniumUI()
                .UseUraniumUIMaterial()
                .ConfigureMauiHandlers(handlers =>
-                    {
-                        handlers.AddUraniumUIHandlers();
-                    })
+               {
+                   handlers.AddUraniumUIHandlers(); 
+               })
                .ConfigureFonts(fonts =>
                {
                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

@@ -55,8 +55,9 @@ public static class EncDec
     
 #region file
 
-    public static void EncryptFile()
+    public static void EncryptFile(SymmetricAlgorithm alg, string inputFile)
     {
+        var fsCrypt = new FileStream(inputFile + ".crypt", FileMode.Create);
         
     }
 
