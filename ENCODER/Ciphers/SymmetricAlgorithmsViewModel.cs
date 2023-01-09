@@ -4,6 +4,9 @@ using System.Text;
 
 using PropertyChanged;
 
+using TeaCiphers;
+
+
 namespace ENCODER.Ciphers;
 
 public class SymmetricAlgWithName : BaseViewModel
@@ -87,6 +90,11 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
     {
         AlgWithNames = new List<SymmetricAlgWithName>()
         {
+            new ()
+            {
+                Algorithm = new TEA(),
+               Name  = "TEa",
+            },
             new()
             {
                 Algorithm = Aes.Create(),
@@ -263,24 +271,24 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         {
             return _encode ??= new Command(async () =>
             {
-                try
-                {
-                    App.AlertSvc.ShowAlert("ОГО","АЛЕРТ!!!");
+                //try
+                //{
                     var alg = SelectedAlg.Algorithm;
-                    alg.Mode = SelectedCipherMode.Mode;
-                    alg.Padding = SelectedPaddingMode.Mode;
                     var key = Convert.FromBase64String(Key);
                     var iv = Convert.FromBase64String(IV);
+                    alg.Mode = SelectedCipherMode.Mode;
+                    alg.Padding = SelectedPaddingMode.Mode;
                     Debug.WriteLine(key.Length);
                     alg.Key = key;
                     alg.IV = iv;
                     var t = EncDec.EncryptText(alg, Text);
                     Result =Convert.ToBase64String(t);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
+                // }
+                // catch (Exception e)
+                // {
+                //     App.AlertSvc.ShowAlert("Ошибка",e.Message);
+                //     Debug.WriteLine(e.Message);
+                // }
             });
         }
     }
@@ -308,6 +316,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
                 }
                 catch (Exception e)
                 {
+                    App.AlertSvc.ShowAlert("Ошибка",e.Message);
                     Debug.WriteLine(e.Message);
                 }
                 
