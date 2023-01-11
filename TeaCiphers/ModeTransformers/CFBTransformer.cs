@@ -12,13 +12,12 @@ public class CFBTransformer: IModeTransformer
     public CFBTransformer(ICipher cipher, byte[] key, byte[] iv, int inputBlockSize, int outputBlockSize) : base(cipher, key, iv, inputBlockSize, outputBlockSize)
     {
         tempArray = new byte[inputBlockSize];
+        IV.CopyTo(tempArray,0);
         CanTransformMultipleBlocks = false;
     }
 
     public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        tempArray = isFirst ? IV : tempArray;
-        
         var tempSpan = new Span<byte>(tempArray);
         var numBytes = Cipher.Encode(Key, tempSpan,tempSpan);
 
@@ -30,9 +29,8 @@ public class CFBTransformer: IModeTransformer
 
     public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        var vec = isFirst ? IV : tempArray;
         var tempSpan = new Span<byte>(tempArray);
-        var numBytes = Cipher.Decode(Key,vec, tempSpan);
+        var numBytes = Cipher.Decode(Key,tempSpan, tempSpan);
         var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
         gamma.CopyTo(outputBuffer);
         tempArray = inputBuffer.ToArray();

@@ -6,6 +6,10 @@ public class TeaCipher: ICipher
 
     public int Encode(byte[] key, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
+        if (inputBuffer.Length == 0)
+        {
+            return 0;
+        }
         var v = inputBuffer.ToArray();
         var v1 = BitConverter.ToUInt32(v);
         var v2 = BitConverter.ToUInt32(v,4);
@@ -28,6 +32,10 @@ public class TeaCipher: ICipher
 
     public int Decode(byte[] key, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
+        if (inputBuffer.Length == 0)
+        {
+            return 0;
+        }
         var v = inputBuffer.ToArray();
         var v1 = BitConverter.ToUInt32(v);
         var v2 = BitConverter.ToUInt32(v,4);
