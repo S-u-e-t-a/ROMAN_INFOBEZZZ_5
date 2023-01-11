@@ -5,25 +5,37 @@ using TeaCiphers.Encoders;
 
 namespace TeaCiphers.ModeTransformers;
 
-public class CFBTransformer<TCipher>: ICryptoTransform where TCipher: ICipher
+public class CFBTransformer: IModeTransformer
 {
-    public void Dispose()
+    private bool isFirst = true;
+    private byte[] tempArray;
+    public CFBTransformer(ICipher cipher, byte[] key, byte[] iv, int inputBlockSize, int outputBlockSize) : base(cipher, key, iv, inputBlockSize, outputBlockSize)
     {
-        throw new NotImplementedException();
+        tempArray = new byte[inputBlockSize];
+        CanTransformMultipleBlocks = false;
     }
 
-    public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+    public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        tempArray = isFirst ? IV : tempArray;
+        
+        var tempSpan = new Span<byte>(tempArray);
+        var numBytes = Cipher.Encode(Key, tempSpan,tempSpan);
+
+        var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
+        gamma.CopyTo(outputBuffer);
+        tempArray = gamma.ToArray();
+        return numBytes;
     }
 
-    public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+    public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        var vec = isFirst ? IV : tempArray;
+        var tempSpan = new Span<byte>(tempArray);
+        var numBytes = Cipher.Decode(Key,vec, tempSpan);
+        var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
+        gamma.CopyTo(outputBuffer);
+        tempArray = inputBuffer.ToArray();
+        return numBytes;
     }
-
-    public bool CanReuseTransform { get; }
-    public bool CanTransformMultipleBlocks { get; }
-    public int InputBlockSize { get; }
-    public int OutputBlockSize { get; }
 }

@@ -5,25 +5,23 @@ using TeaCiphers.Encoders;
 
 namespace TeaCiphers.ModeTransformers;
 
-public class ECBTransformer<TCipher>: ICryptoTransform where TCipher: ICipher
+public class ECBTransformer: IModeTransformer
 {
-    public void Dispose()
+    public ECBTransformer(ICipher cipher, byte[] key, byte[] iv, int inputBlockSize, int outputBlockSize) : base(cipher, key, iv, inputBlockSize, outputBlockSize)
     {
-        throw new NotImplementedException();
     }
 
-    public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+    public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        var numBytes = Cipher.Encode(Key,inputBuffer, outputBuffer);
+
+        return numBytes;
     }
 
-    public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+    public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
-    }
+        var numBytes = Cipher.Decode(Key,inputBuffer, outputBuffer);
 
-    public bool CanReuseTransform { get; }
-    public bool CanTransformMultipleBlocks { get; }
-    public int InputBlockSize { get; }
-    public int OutputBlockSize { get; }
+        return numBytes;
+    }
 }

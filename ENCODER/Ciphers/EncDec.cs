@@ -36,19 +36,18 @@ public static class EncDec
     {
 
         var decryptor = alg.CreateDecryptor();
-
+        string result;
         using (MemoryStream ms = new MemoryStream(Text))
         {
             using (CryptoStream cs = new CryptoStream(ms,decryptor, CryptoStreamMode.Read))
             {
                 using (StreamReader sw = new StreamReader(cs))
                 {
-                    var result = sw.ReadToEnd();
-
-                    return result;
+                    result = sw.ReadToEnd();
                 }
             }
         }
+        return result;
     }
 
 #endregion

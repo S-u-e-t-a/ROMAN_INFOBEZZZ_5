@@ -1,29 +1,42 @@
-﻿using System.Security.Cryptography;
-
-using TeaCiphers.Encoders;
+﻿using TeaCiphers.Encoders;
+using TeaCiphers.Padders;
 
 
 namespace TeaCiphers.ModeTransformers;
 
-public class CBCTransformer<TCipher>: ICryptoTransform where TCipher: ICipher
+public class CBCTransformer : IModeTransformer
 {
-    public void Dispose()
+    private bool isFirst = true;
+    private byte[] tempArray;
+
+    public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        tempArray = isFirst ? IV : tempArray;
+        var tempSpan = new Span<byte>(tempArray);
+        var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
+        //todo finish 
+        var numBytes = Cipher.Encode(Key, gamma,tempSpan);
+        
+        tempSpan.CopyTo(outputBuffer);
+        tempArray = tempSpan.ToArray();
+        return numBytes;
     }
 
-    public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+    public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        var vec = isFirst ? IV : tempArray;
+        var numBytes = Cipher.Decode(Key,inputBuffer, tempArray);
+        var decoded = new Span<byte>(TransfromHelper.XOR(vec, tempArray));
+        tempArray = inputBuffer.ToArray();
+        
+        decoded.CopyTo(outputBuffer);
+        return numBytes;
     }
-
-    public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+    
+    public CBCTransformer(ICipher cipher, byte[] key, byte[] iv, int inputBlockSize, int outputBlockSize) : base(cipher, key, iv, inputBlockSize, outputBlockSize)
     {
-        throw new NotImplementedException();
+        tempArray = new byte[inputBlockSize];
+        CanTransformMultipleBlocks = false;
     }
-
-    public bool CanReuseTransform { get; }
-    public bool CanTransformMultipleBlocks { get; }
-    public int InputBlockSize { get; }
-    public int OutputBlockSize { get; }
 }
+

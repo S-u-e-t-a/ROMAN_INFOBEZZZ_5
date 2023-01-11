@@ -5,25 +5,28 @@ using TeaCiphers.Encoders;
 
 namespace TeaCiphers.ModeTransformers;
 
-public class OFBTransformer<TCipher>: ICryptoTransform where TCipher: ICipher
+public class OFBTransformer: IModeTransformer
 {
-    public void Dispose()
+    private bool isFirst = true;
+    private byte[] tempArray;
+    public OFBTransformer(ICipher cipher, byte[] key, byte[] iv, int inputBlockSize, int outputBlockSize) : base(cipher, key, iv, inputBlockSize, outputBlockSize)
     {
-        throw new NotImplementedException();
+        tempArray = new byte[inputBlockSize];
+        CanTransformMultipleBlocks = false;
     }
 
-    public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+    public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        var vec = isFirst ? IV : tempArray;
+        var numBytes = Cipher.Decode(Key,vec, tempArray);
+        var decoded =TransfromHelper.XOR(inputBuffer, tempArray.AsSpan());
+        decoded.CopyTo(outputBuffer);
+        
+        return numBytes;
     }
 
-    public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+    public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        throw new NotImplementedException();
+        return Encrypt(inputBuffer, outputBuffer);
     }
-
-    public bool CanReuseTransform { get; }
-    public bool CanTransformMultipleBlocks { get; }
-    public int InputBlockSize { get; }
-    public int OutputBlockSize { get; }
 }

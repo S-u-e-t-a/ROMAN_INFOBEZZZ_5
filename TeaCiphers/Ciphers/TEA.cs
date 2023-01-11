@@ -1,4 +1,8 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
+
+using TeaCiphers.Encoders;
+using TeaCiphers.ModeTransformers;
 
 
 namespace TeaCiphers;
@@ -20,12 +24,18 @@ public sealed class TEA: SymmetricAlgorithm
 
     public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[]? rgbIV)
     {
-        return new TeaCryptoTransform(rgbKey, rgbIV,false);
+
+        var cipher = new TeaCipher();
+        var transformer = TransfromHelper.CreateTransformer(Mode, Padding, cipher, rgbKey, rgbIV, false, 8,8);
+        
+        return transformer;
     }
 
     public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[]? rgbIV)
     {
-        return new TeaCryptoTransform(rgbKey, rgbIV,true);
+        var cipher = new TeaCipher();
+        var transformer = TransfromHelper.CreateTransformer(Mode, Padding, cipher, rgbKey, rgbIV, true, 8,8);
+        return transformer;
     }
 
     public override void GenerateIV()

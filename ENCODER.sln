@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ENCODER", "ENCODER\ENCODER.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeaCiphers", "TeaCiphers\TeaCiphers.csproj", "{10AE701E-2667-44BD-AA7A-32A2BE7D4F54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeaTests", "TeaTests\TeaTests.csproj", "{50A6C457-ECE8-484C-8B3F-9291F2610ADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{10AE701E-2667-44BD-AA7A-32A2BE7D4F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10AE701E-2667-44BD-AA7A-32A2BE7D4F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10AE701E-2667-44BD-AA7A-32A2BE7D4F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50A6C457-ECE8-484C-8B3F-9291F2610ADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50A6C457-ECE8-484C-8B3F-9291F2610ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50A6C457-ECE8-484C-8B3F-9291F2610ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50A6C457-ECE8-484C-8B3F-9291F2610ADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

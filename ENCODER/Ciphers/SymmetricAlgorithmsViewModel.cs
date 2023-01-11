@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -279,6 +281,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
                     alg.Mode = SelectedCipherMode.Mode;
                     alg.Padding = SelectedPaddingMode.Mode;
                     Debug.WriteLine(key.Length);
+                    Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
                     alg.Key = key;
                     alg.IV = iv;
                     var t = EncDec.EncryptText(alg, Text);
