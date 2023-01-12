@@ -2,7 +2,7 @@
 
 public class TeaCipher: ICipher
 {
-    private static uint delta = 0x9e3779b9;
+    protected static uint delta = 0x9e3779b9;
 
     public int Encode(byte[] key, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
@@ -10,9 +10,9 @@ public class TeaCipher: ICipher
         {
             return 0;
         }
-        var v = inputBuffer.ToArray();
-        var v1 = BitConverter.ToUInt32(v);
-        var v2 = BitConverter.ToUInt32(v,4);
+        //var v = inputBuffer.ToArray();
+        var v1 = BitConverter.ToUInt32(inputBuffer);
+        var v2 = BitConverter.ToUInt32(inputBuffer.Slice(4,4));
         var vInt = new uint[] {v1, v2};
         var k1 = BitConverter.ToUInt32(key);
         var k2 = BitConverter.ToUInt32(key,4);
@@ -20,13 +20,12 @@ public class TeaCipher: ICipher
         var k4 = BitConverter.ToUInt32(key,12);
         var intKey = new[] {k1, k2,k3,k4};
         encrypt(vInt,intKey);
-        BitConverter.GetBytes(vInt[0]).CopyTo(v,0);
-        BitConverter.GetBytes(vInt[1]).CopyTo(v,4);
-        for (int i = 0; i < 8; i++)
-        {
-            outputBuffer[i] = v[i];
-        }
-
+        BitConverter.GetBytes(vInt[0]).CopyTo(outputBuffer);
+        BitConverter.GetBytes(vInt[1]).CopyTo(outputBuffer.Slice(4,4));
+        // for (int i = 0; i < 8; i++)
+        // {
+        //     outputBuffer[i] = v[i];
+        // }
         return 8; 
     }
 
@@ -36,9 +35,9 @@ public class TeaCipher: ICipher
         {
             return 0;
         }
-        var v = inputBuffer.ToArray();
-        var v1 = BitConverter.ToUInt32(v);
-        var v2 = BitConverter.ToUInt32(v,4);
+        //var v = inputBuffer.ToArray();
+        var v1 = BitConverter.ToUInt32(inputBuffer);
+        var v2 = BitConverter.ToUInt32(inputBuffer.Slice(4,4));
         var vInt = new uint[] {v1, v2};
         var k1 = BitConverter.ToUInt32(key);
         var k2 = BitConverter.ToUInt32(key,4);
@@ -46,18 +45,18 @@ public class TeaCipher: ICipher
         var k4 = BitConverter.ToUInt32(key,12);
         var intKey = new[] {k1, k2,k3,k4};
         decrypt(vInt,intKey);
-        BitConverter.GetBytes(vInt[0]).CopyTo(v,0);
-        BitConverter.GetBytes(vInt[1]).CopyTo(v,4);
-        for (int i = 0; i < 8; i++)
-        {
-            outputBuffer[i] = v[i];
-        }
+        BitConverter.GetBytes(vInt[0]).CopyTo(outputBuffer);
+        BitConverter.GetBytes(vInt[1]).CopyTo(outputBuffer.Slice(4,4));
+        // for (int i = 0; i < 8; i++)
+        // {
+        //     outputBuffer[i] = v[i];
+        // }
         return 8; 
 
     }
     
     
-    private void encrypt(uint[] v, uint[] k)
+    protected virtual void encrypt(uint[] v, uint[] k)
     {
         if (v.Length != 2)
         {
@@ -88,7 +87,7 @@ public class TeaCipher: ICipher
         v[1] = v1;
     }
 
-    private void decrypt(uint[] v, uint[] k)
+    protected virtual void decrypt(uint[] v, uint[] k)
     {
         if (v.Length != 2)
         {
