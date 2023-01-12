@@ -18,22 +18,23 @@ public class CFBTransformer: IModeTransformer
 
     public override int Encrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        var tempSpan = new Span<byte>(tempArray);
-        var numBytes = Cipher.Encode(Key, tempSpan,tempSpan);
+        //var tempSpan = new Span<byte>(tempArray);
+        var temp2 = new byte[tempArray.Length];
+        var numBytes = Cipher.Encode(Key, tempArray,temp2);
 
-        var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
+        var gamma = TransfromHelper.XOR(inputBuffer, temp2);
         gamma.CopyTo(outputBuffer);
-        tempArray = gamma.ToArray();
+        gamma.CopyTo(tempArray);
         return numBytes;
     }
 
     public override int Decrypt(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        var tempSpan = new Span<byte>(tempArray);
-        var numBytes = Cipher.Decode(Key,tempSpan, tempSpan);
-        var gamma = TransfromHelper.XOR(inputBuffer, tempSpan);
+        var temp2 = new byte[tempArray.Length];
+        var numBytes = Cipher.Decode(Key,tempArray, temp2);
+        var gamma = TransfromHelper.XOR(inputBuffer, temp2);
         gamma.CopyTo(outputBuffer);
-        tempArray = inputBuffer.ToArray();
+        inputBuffer.CopyTo(tempArray);
         return numBytes;
     }
 }

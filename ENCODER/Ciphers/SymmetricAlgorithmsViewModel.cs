@@ -60,22 +60,13 @@ public class SymmetricAlgWithName : BaseViewModel
         return sizes;
     } }
 
+    public List<CipherMode> LegalMods { get; set; }
     public override string ToString()
     {
         return Name;
     }
 }
 
-
-public class CipherModeExtended: BaseViewModel
-{
-    public CipherMode Mode { get; set; }
-    public string Name { get; set; }
-    public override string ToString()
-    {
-        return Name;
-    }
-}
 
 public class PaddingModeExtended: BaseViewModel
 {
@@ -95,33 +86,56 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             new ()
             {
                 Algorithm = new TEA(),
-               Name  = "TEa",
+               Name  = "TEA",
+               LegalMods = new List<CipherMode>()
+               {
+                   CipherMode.CBC, CipherMode.ECB, CipherMode.OFB
+               }
             },
             new()
             {
                 Algorithm = Aes.Create(),
                 Name = "AES",
-                
+                LegalMods = new List<CipherMode>()
+                {
+                    CipherMode.CBC, CipherMode.CFB, CipherMode.ECB, 
+                }
             },
             new ()
             {
                 Algorithm = DES.Create(),
                 Name = "DES",
+                LegalMods = new List<CipherMode>()
+                {
+                    CipherMode.CBC, CipherMode.CFB, CipherMode.ECB,
+                }
             },
             new()
             {
               Algorithm  = TripleDES.Create(),
               Name = "TripleDES",
+              LegalMods = new List<CipherMode>()
+              {
+                  CipherMode.CBC, CipherMode.CFB, CipherMode.ECB, 
+              }
             },
             new()
             {
              Algorithm = RC2.Create(),
              Name = "RC2",
+             LegalMods = new List<CipherMode>()
+             {
+                 CipherMode.CBC, CipherMode.CFB, CipherMode.ECB, 
+             }
             },
             new()
             {
                 Algorithm = Rijndael.Create(),
                 Name = "Rijndael",
+                LegalMods = new List<CipherMode>()
+                {
+                    CipherMode.CBC, CipherMode.CFB, CipherMode.ECB, 
+                }
             }
         };
         
@@ -129,17 +143,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         
         
         var fields = typeof(CipherMode).GetFields().Where(fi => fi.IsLiteral);
-        AllCipherModes = new List<CipherModeExtended>();
-        foreach (var field in fields)
-        {
-            var mode = new CipherModeExtended()
-            {
-                Mode = (CipherMode) field.GetRawConstantValue(),
-                Name = field.Name
-            };
-            
-            AllCipherModes.Add(mode);
-        }
+
         fields = typeof(PaddingMode).GetFields().Where(fi => fi.IsLiteral);
         AllPaddingModes = new List<PaddingModeExtended>();
         foreach (var field in fields)
@@ -153,7 +157,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             AllPaddingModes.Add(mode);
         }
 
-        SelectedPaddingMode = AllPaddingModes[0];
+        SelectedPaddingMode = AllPaddingModes.First(x=> x.Mode == PaddingMode.PKCS7);
         SelectedCipherMode = AllCipherModes[0];
         IsText = true;
         IsPassword = true;
@@ -171,13 +175,25 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         set
         {
             _selectedAlg = value;
+            if (value.LegalMods.Contains(SelectedCipherMode))
+            {
+                SelectedCipherMode = value.LegalMods.First(m => m == SelectedCipherMode);
+            }
+            else
+            {
+                SelectedCipherMode = value.LegalMods.First();
+            }
+            OnPropertyChanged(nameof(SelectedCipherMode));
             OnPropertyChanged(nameof(KeySize1));
             OnPropertyChanged(nameof(BlockSize1));
             
         }
     }
 
-    public List<CipherModeExtended> AllCipherModes { get; set; }
+    public List<CipherMode> AllCipherModes
+    {
+        get => SelectedAlg.LegalMods;
+    }
     public List<PaddingModeExtended> AllPaddingModes { get; set; }
 
 
@@ -260,15 +276,35 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
     {
         get => !IsPassword;
     }
-    
-    
-    public CipherModeExtended SelectedCipherMode { get; set; } 
+
+    private CipherMode _selectedCipherMode;
+
+    public CipherMode SelectedCipherMode
+    {
+        get
+        {
+            return _selectedCipherMode;
+        }
+        set
+        {
+            if (SelectedAlg is not null)
+            {
+                _selectedCipherMode = SelectedAlg.LegalMods.Contains(value) ? value : AllCipherModes.First();
+            }
+        }
+    }
+
+
     public PaddingModeExtended SelectedPaddingMode { get; set; } 
     
 
 #endregion
+
+
+#region Commands
+
     
-    
+
     
     private Command _encode;
 
@@ -356,7 +392,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             var alg = SelectedAlg.Algorithm;
             var key = Convert.FromBase64String(Key);
             var iv = Convert.FromBase64String(IV);
-            alg.Mode = SelectedCipherMode.Mode;
+            alg.Mode = SelectedCipherMode;
             alg.Padding = SelectedPaddingMode.Mode;
             Debug.WriteLine(key.Length);
             Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
@@ -377,7 +413,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         try
         {
             var alg = SelectedAlg.Algorithm;
-            alg.Mode = SelectedCipherMode.Mode;
+            alg.Mode = SelectedCipherMode;
             alg.Padding = SelectedPaddingMode.Mode;
             var key = Convert.FromBase64String(Key);
             var iv = Convert.FromBase64String(IV);
@@ -402,7 +438,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             var alg = SelectedAlg.Algorithm;
             var key = Convert.FromBase64String(Key);
             var iv = Convert.FromBase64String(IV);
-            alg.Mode = SelectedCipherMode.Mode;
+            alg.Mode = SelectedCipherMode;
             alg.Padding = SelectedPaddingMode.Mode;
             Debug.WriteLine(key.Length);
             Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
@@ -424,7 +460,7 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             var alg = SelectedAlg.Algorithm;
             var key = Convert.FromBase64String(Key);
             var iv = Convert.FromBase64String(IV);
-            alg.Mode = SelectedCipherMode.Mode;
+            alg.Mode = SelectedCipherMode;
             alg.Padding = SelectedPaddingMode.Mode;
             Debug.WriteLine(key.Length);
             Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
@@ -438,5 +474,6 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
             Debug.WriteLine(e.Message);
         }
     }
-    
+#endregion
+
 }
