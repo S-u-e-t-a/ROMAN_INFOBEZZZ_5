@@ -23,6 +23,8 @@ public partial class CustomEditor : InputField
                        {
                            (bindable as CustomEditor).InternalEditor.Text = (string)newValue;
                            (bindable as CustomEditor).OnPropertyChanged(nameof(Text));
+                           (bindable as CustomEditor).OnPropertyChanged(nameof(HasValue));
+                           (bindable as CustomEditor).UpdateState();
                        }
                            );
 
@@ -50,7 +52,7 @@ public partial class CustomEditor : InputField
         set;
     }
 
-    public override View Content { get; set; } = new Editor(){AutoSize = EditorAutoSizeOption.TextChanges};
+    public override View Content { get; set; } = new Editor(){AutoSize = EditorAutoSizeOption.TextChanges, IsSpellCheckEnabled = false};
 
     public override bool HasValue => !string.IsNullOrEmpty(InternalEditor.Text);
 }

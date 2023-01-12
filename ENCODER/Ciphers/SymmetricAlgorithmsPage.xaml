@@ -25,9 +25,23 @@
                                     IsVisible="{Binding IsText}"  >
                    
                 </custom:CustomEditor>
-                <custom:CustomEditor Text="{Binding Path}"
-                                     IsVisible="{Binding IsFile}"
-                                     Title="Путь к файлу для шифрования" />
+                <HorizontalStackLayout IsVisible="{Binding IsFile}" Spacing="20">
+                    <HorizontalStackLayout>
+                        <controls:TextField Text="{Binding InputPath}"
+                                            Title="Путь к входному файлу" />
+                        <Button ImageSource="{FontImage FontFamily=MaterialRegular, Glyph={x:Static u:MaterialRegular.File_open}}"
+                                Command="{Binding OpenInputFile}"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout>
+                        <controls:TextField Text="{Binding OutputPath}"
+                                            Title="Путь к выходному файлу" />
+                        <Button ImageSource="{FontImage FontFamily=MaterialRegular, Glyph={x:Static u:MaterialRegular.File_open}}"
+                                Command="{Binding OpenOutputPath}"/>
+                    </HorizontalStackLayout>
+                    
+                   
+                </HorizontalStackLayout>
+                
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -106,15 +120,10 @@
                         Text="Декодировать" />
                 </HorizontalStackLayout>
                 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+               
                     <custom:CustomEditor x:Name="ResultField" Title="Результат"
                                            Text="{Binding Result, Mode=TwoWay}" IsEnabled="True" />
-                    <Button  Text="Скопировать в буфер" Grid.Column="1"  Clicked="Button_OnClicked"/>
-                </Grid>
+                
                 <BoxView HeightRequest="200" Color="{StaticResource   OnBackground}"/>
             </VerticalStackLayout>
         </ScrollView>

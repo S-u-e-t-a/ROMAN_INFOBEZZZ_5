@@ -54,15 +54,41 @@ public static class EncDec
     
 #region file
 
-    public static void EncryptFile(SymmetricAlgorithm alg, string inputFile)
+    public static void EncryptFile(SymmetricAlgorithm alg, string inputFile, string outputFile)
     {
-        var fsCrypt = new FileStream(inputFile + ".crypt", FileMode.Create);
-        
+        using (FileStream fsCrypt = new FileStream(outputFile, FileMode.Create))
+        {
+            using (CryptoStream cs = new CryptoStream(fsCrypt, alg.CreateEncryptor(), CryptoStreamMode.Write))
+            {
+                using (FileStream fsIn = new FileStream(inputFile, FileMode.Open))
+                {
+                    byte[] buffer = new byte[1048576];
+                    int read;
+                    while ((read = fsIn.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        cs.Write(buffer, 0, read);
+                    }
+                }
+            }
+        }
     }
-
-    public static void DecryptFile()
+    public static void DecryptFile(SymmetricAlgorithm alg, string inputFile, string outputFile)
     {
-        
+        using (FileStream fsCrypt = new FileStream(inputFile, FileMode.Open))
+        {
+            using (CryptoStream cryptoStream = new CryptoStream(fsCrypt, alg.CreateDecryptor(), CryptoStreamMode.Read))
+            {
+                using (FileStream fsOut = new FileStream(outputFile, FileMode.Create))
+                {
+                    int read;
+                    byte[] buffer = new byte[1048576];
+                    while ((read = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        fsOut.Write(buffer, 0, read);
+                    }
+                }
+            }
+        }
     }
 
 #endregion

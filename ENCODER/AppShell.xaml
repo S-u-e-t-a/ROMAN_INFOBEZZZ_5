@@ -21,11 +21,11 @@
 
     </Shell.FlyoutHeader>
     
-    <FlyoutItem Title="HASH"
-                Route="WelcomePage"
-                Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst={x:Null}}">
-        <ShellContent ContentTemplate="{DataTemplate ciphers:CalcHashPage}" />
-    </FlyoutItem>
+    <!-- <FlyoutItem Title="HASH" -->
+    <!--             Route="WelcomePage" -->
+    <!--             Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst={x:Null}}"> -->
+    <!--     <ShellContent ContentTemplate="{DataTemplate ciphers:CalcHashPage}" /> -->
+    <!-- </FlyoutItem> -->
     
     <FlyoutItem Title="SYMMETRIC"
                 Route="WelcomePage"

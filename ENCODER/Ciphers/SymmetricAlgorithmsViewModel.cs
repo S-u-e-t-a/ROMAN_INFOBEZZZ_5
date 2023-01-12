@@ -155,6 +155,8 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
 
         SelectedPaddingMode = AllPaddingModes[0];
         SelectedCipherMode = AllCipherModes[0];
+        IsText = true;
+        IsPassword = true;
     }
     public List<SymmetricAlgWithName> AlgWithNames { get; set; }
 
@@ -182,7 +184,10 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
 #region input
 
     public string Text { get; set; }= "ТЕКСТ";
-    public string Path { get; set; }= "";
+    
+    public string OutputPath { get; set; }
+
+    public string InputPath { get; set; }= "";
     public string Result { get; set; }
     public string Password { get; set; } = "";
     public string Salt { get; set; }= "";
@@ -273,25 +278,14 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         {
             return _encode ??= new Command(async () =>
             {
-                //try
-                //{
-                    var alg = SelectedAlg.Algorithm;
-                    var key = Convert.FromBase64String(Key);
-                    var iv = Convert.FromBase64String(IV);
-                    alg.Mode = SelectedCipherMode.Mode;
-                    alg.Padding = SelectedPaddingMode.Mode;
-                    Debug.WriteLine(key.Length);
-                    Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
-                    alg.Key = key;
-                    alg.IV = iv;
-                    var t = EncDec.EncryptText(alg, Text);
-                    Result =Convert.ToBase64String(t);
-                // }
-                // catch (Exception e)
-                // {
-                //     App.AlertSvc.ShowAlert("Ошибка",e.Message);
-                //     Debug.WriteLine(e.Message);
-                // }
+                if (IsText)
+                {
+                    EncryptText();
+                }
+                else
+                {
+                    EncryptFile();
+                }
             });
         }
     }
@@ -304,30 +298,145 @@ public class SymmetricAlgorithmsViewModel: BaseViewModel
         {
             return _decode ??= new Command(() =>
             {
-                try
+
+                if (IsText)
                 {
-                    var alg = SelectedAlg.Algorithm;
-                    alg.Mode = SelectedCipherMode.Mode;
-                    alg.Padding = SelectedPaddingMode.Mode;
-                    var key = Convert.FromBase64String(Key);
-                    var iv = Convert.FromBase64String(IV);
-                    Debug.WriteLine(key.Length);
-                    alg.Key = key;
-                    alg.IV = iv;
-                    var t = EncDec.DecryptText(alg, Convert.FromBase64String(Text));
-                    Result = t;
+                    DecryptText();
                 }
-                catch (Exception e)
+                else
                 {
-                    App.AlertSvc.ShowAlert("Ошибка",e.Message);
-                    Debug.WriteLine(e.Message);
+                    DecryptFile();
                 }
-                
                 
             });
         }
     }
+
+    private Command _openInputFile;
+
+    public Command OpenInputFile
+    {
+        get
+        {
+            return _openInputFile ??= new Command( async o =>
+            {
+                var result = await FilePicker.Default.PickAsync();
+                if (result != null)
+                {
+                    InputPath = result.FullPath;
+                }
+            });
+        }
+    }
+
+    private Command _openOutputPath;
+
+    public Command OpenOutputPath
+    {
+        get
+        {
+            return _openOutputPath ??= new Command( async o =>
+            {
+                var result = await FilePicker.Default.PickAsync();
+                if (result != null)
+                {
+                    OutputPath = result.FullPath;
+                }
+            });
+        }
+    }
+
+
     
     
+    private void EncryptText()
+    {
+        try
+        {
+            var alg = SelectedAlg.Algorithm;
+            var key = Convert.FromBase64String(Key);
+            var iv = Convert.FromBase64String(IV);
+            alg.Mode = SelectedCipherMode.Mode;
+            alg.Padding = SelectedPaddingMode.Mode;
+            Debug.WriteLine(key.Length);
+            Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
+            alg.Key = key;
+            alg.IV = iv;
+            var t = EncDec.EncryptText(alg, Text);
+            Result =Convert.ToBase64String(t);
+        }
+        catch (Exception e)
+        {
+            App.AlertSvc.ShowAlert("Ошибка",e.Message);
+            Debug.WriteLine(e.Message);
+        }
+    }
+
+    private void DecryptText()
+    {
+        try
+        {
+            var alg = SelectedAlg.Algorithm;
+            alg.Mode = SelectedCipherMode.Mode;
+            alg.Padding = SelectedPaddingMode.Mode;
+            var key = Convert.FromBase64String(Key);
+            var iv = Convert.FromBase64String(IV);
+            Debug.WriteLine(key.Length);
+            alg.Key = key;
+            alg.IV = iv;
+            var t = EncDec.DecryptText(alg, Convert.FromBase64String(Text));
+            Result = t;
+        }
+        catch (Exception e)
+        {
+            App.AlertSvc.ShowAlert("Ошибка",e.Message);
+            Debug.WriteLine(e.Message);
+        }
+    }
+
+
+    private void EncryptFile()
+    {
+        try
+        {
+            var alg = SelectedAlg.Algorithm;
+            var key = Convert.FromBase64String(Key);
+            var iv = Convert.FromBase64String(IV);
+            alg.Mode = SelectedCipherMode.Mode;
+            alg.Padding = SelectedPaddingMode.Mode;
+            Debug.WriteLine(key.Length);
+            Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
+            alg.Key = key;
+            alg.IV = iv;
+            EncDec.EncryptFile(alg, InputPath, OutputPath);
+        }
+        catch (Exception e)
+        {
+            App.AlertSvc.ShowAlert("Ошибка",e.Message);
+            Debug.WriteLine(e.Message);
+        }
+    }
+
+    private void DecryptFile()
+    {
+        try
+        {
+            var alg = SelectedAlg.Algorithm;
+            var key = Convert.FromBase64String(Key);
+            var iv = Convert.FromBase64String(IV);
+            alg.Mode = SelectedCipherMode.Mode;
+            alg.Padding = SelectedPaddingMode.Mode;
+            Debug.WriteLine(key.Length);
+            Debug.WriteLine($"Text size - {Encoding.UTF8.GetBytes(Text).Length}");
+            alg.Key = key;
+            alg.IV = iv;
+            EncDec.DecryptFile(alg, InputPath, OutputPath);
+        }
+        catch (Exception e)
+        {
+            App.AlertSvc.ShowAlert("Ошибка",e.Message);
+            Debug.WriteLine(e.Message);
+        }
+    }
     
 }
